@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en-GB"></html>
+<html>
+	<head>
+    <meta charset="utf-8" />
+		<title>Titulo</title>
+        <style>
+            html, body { margin: 0; padding: 0; overflow: hidden; }
+            #text {
+                position: absolute;
+                padding: 10px;
+                width: 100%;
+                text-align: center;
+                color: #ffffff;
+            }
+        </style>
+	</head>
+	<body>
+		<div id="text">	GRUPO DE CUBOS<br/>
+            NATALIA MONTAÑO<br/>
+        </div>
+	</body>
+    </html>
+
+<body>
+  <script type="module">
+    import * as THREE from 'https://sebastiann16.github.io/CompG/three.module.js';
+    import { OrbitControls } from 'https://sebastiann16.github.io/CompG/OrbitControls.js';
+    var WIDTH = window.innerWidth;
+    var HEIGHT = window.innerHeight;
+
+    var renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(WIDTH, HEIGHT);
+    renderer.setClearColor(0x000000, 1);
+    document.body.appendChild(renderer.domElement);
+
+    //Creacion de la escena
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(70, WIDTH / HEIGHT);
+    //Posicion de las camaras
+    camera.position.z = 10;
+    camera.position.y = 10;
+    camera.position.x = 10;
+    scene.add(camera);
+    //Luz de la escena
+    const light = new THREE.AmbientLight(0x404040, 5);
+    scene.add(light);
+    const size = 200;
+    const divisions = 180;
+    const axes = new THREE.AxesHelper(2000);
+    scene.add(axes);
+
+  //Crear la Grilla
+    const gridHelper = new THREE.GridHelper(size, divisions);
+    scene.add(gridHelper);
+
+  //Crear visualizador de ejes
+    const axesHelper = new THREE.AxesHelper( 20 );
+    scene.add( axesHelper );
+
+  //Luz del escenario 
+    const luces = new THREE.DirectionalLight(0x2B14BD, -1);
+    scene.add(luces);
+
+  //Arreglo de colores cubos
+     const color = [0x6DE1E3, 0x50EE7D, 0xE36DD1, 0xF3E26B];
+
+  //Funcion Cubos
+    function cubo(base, altura, ancho, col) {
+    const geometry = new THREE.BoxGeometry(base, altura, ancho);
+    const material = new THREE.MeshPhysicalMaterial({ color: col });
+    return new THREE.Mesh(geometry, material);
+    }
+
+  //Construccion de los cubos 
+    var ArCub = [];
+    var n = color.length;
+    var lado=4; //Lado del cubo
+
+    for (var i = 0; i < n; i++) {
+      var alto = i+1;
+      ArCub[i] = cubo(lado/i, alto*2/i, lado/i, color[i]);
+      ArCub[i].position.x = 1;  //posicion en x
+      ArCub[i].position.y = alto+i;  // posicion en y
+    }
+
+    const group = new THREE.Group();
+    for (i = 0; i < n; i++) {
+      group.add(ArCub[i]);
+    }
+
+    group.rotation.y = Math.PI / 4;
+
+    scene.add(group);
+
+  //Transformaciones de los cubos
+    ArCub[0].translate = (lado/2,lado/2,lado/2); //Translacion cubo1
+    ArCub[1].translate =(lado/2,lado+lado/2,lado/2); //Translacion cubo2
+    ArCub[2].translate=(lado/4,lado+lado/4,lado/4); //Translacion cubo3
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+
+  // Funcion para poder moverlo en diferentes direcciones
+    function animate() {
+
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera)
+    }
+    animate();
+  </script>
+</body>
+
+</html>
